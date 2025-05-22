@@ -64,7 +64,7 @@ export class UserService {
   async getUserWithBooks(userId: number): Promise<UserMeOutDto> {
     const user = await this.userRepository.findOne({
       where: { id_user: userId },
-      relations: ['userBooks', 'userBooks.book', 'userBooks.book.genre'],
+      relations: ['books', 'books.genre'],
     });
 
     if (!user) {

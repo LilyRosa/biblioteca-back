@@ -29,6 +29,9 @@ export class User {
   })
   role: Role;
 
+  @Column({ nullable: true })
+  email?: string;
+
   @ManyToMany(() => Book, (book) => book.users, { eager: true }) // carga automática opcional
   @JoinTable({
     name: 'user_books', // nombre de la tabla intermedia (opcional)

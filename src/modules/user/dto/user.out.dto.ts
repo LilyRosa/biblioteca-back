@@ -14,4 +14,7 @@ export default class UserMeOutDto {
 
   @ApiProperty()
   books: BookOutDto[];
+
+  @ApiProperty()
+  email?: string;
 }

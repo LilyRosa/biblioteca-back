@@ -76,6 +76,7 @@ export default class AuthService {
 
     const newUser = this.userRepository.create({
       username: dto.username,
+      email: dto.email,
       password: dto.password,
       role: Role.User,
     });
