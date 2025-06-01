@@ -4,11 +4,10 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
-  ManyToMany,
   OneToMany,
 } from 'typeorm';
 import { Genre } from '../genre/genre.entity';
-import { User } from '../user/user.entity';
+import { UserBook } from '../user-books/user-books.entity'; // Asegúrate que la ruta sea correcta
 
 @Entity()
 export class Book {
@@ -34,6 +33,7 @@ export class Book {
   @Column()
   bookPdf: string;
 
-  @ManyToMany(() => User, (user) => user.books)
-  users: User[];
+  // Reemplaza ManyToMany por OneToMany hacia UserBook
+  @OneToMany(() => UserBook, (userBook) => userBook.book)
+  userBooks: UserBook[];
 }

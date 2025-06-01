@@ -4,13 +4,14 @@ import {
   PrimaryGeneratedColumn,
   ManyToMany,
   JoinTable,
-  OneToMany,
   BeforeInsert,
   BeforeUpdate,
+  OneToMany,
 } from 'typeorm';
 import { Book } from '../books/books.entity';
 import * as bcrypt from 'bcrypt';
 import { Role } from 'src/common/decorators/roles.decorator';
+import { UserBook } from '../user-books/user-books.entity';
 
 @Entity()
 export class User {
@@ -32,19 +33,8 @@ export class User {
   @Column({ nullable: true })
   email?: string;
 
-  @ManyToMany(() => Book, (book) => book.users, { eager: true }) // carga automática opcional
-  @JoinTable({
-    name: 'user_books', // nombre de la tabla intermedia (opcional)
-    joinColumn: {
-      name: 'user_id',
-      referencedColumnName: 'id_user',
-    },
-    inverseJoinColumn: {
-      name: 'book_id',
-      referencedColumnName: 'id_book',
-    },
-  })
-  books: Book[];
+  @OneToMany(() => UserBook, (userBook) => userBook.user)
+  userBooks: UserBook[];
 
   @BeforeInsert()
   @BeforeUpdate()

@@ -9,6 +9,8 @@ import {
   ParseIntPipe,
   Request,
   UseGuards,
+  Patch,
+  Req,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -24,6 +26,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Role, Roles } from 'src/common/decorators/roles.decorator';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
+import { UserBookFavorite } from './dto/user-book-favorite.dto';
 @ApiTags('users')
 @Controller('users')
 export class UserController {
@@ -58,6 +61,36 @@ export class UserController {
     return this.userService.getUserWithBooks(userId);
   }
 
+  @Get('/me/favorite')
+  @Roles(Role.User, Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({ description: 'Invalid Credentials' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
+  @ApiOkResponse()
+  @ApiOperation({ summary: 'Obtener los datos del usuario autenticado' })
+  @ApiNotFoundResponse()
+  getUserMeFavorite(@Request() req) {
+    const userId = req.user.userId;
+
+    return this.userService.getUserWithFavoriteBooks(userId);
+  }
+
+  @Get('/me/suggestion')
+  @Roles(Role.User, Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({ description: 'Invalid Credentials' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
+  @ApiOkResponse()
+  @ApiOperation({ summary: 'Obtener los datos del usuario autenticado' })
+  @ApiNotFoundResponse()
+  getUserMeSuggestion(@Request() req) {
+    const userId = req.user.userId;
+
+    return this.userService.getUserWithSuggestedBooks(userId);
+  }
+
   @Put('/me/books')
   @Roles(Role.User, Role.Admin)
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -90,27 +123,19 @@ export class UserController {
     return this.userService.remove(userId);
   }
 
-  // @Post()
-  // @ApiOkResponse()
-  // @ApiOperation({ summary: 'Crear un usuario' })
-  // createUser(@Body() createUserDto: CreateUserDto) {
-  //   return this.userService.create(createUserDto);
-  // }
-
-  // @Put(':id')
-  // @ApiOkResponse()
-  // @ApiOperation({ summary: 'Actualizar un usuario existente' })
-  // updateUser(
-  //   @Param('id', ParseIntPipe) id: number,
-  //   @Body() updateUserDto: UpdateUserDto,
-  // ) {
-  //   return this.userService.update(id, updateUserDto);
-  // }
-
-  // @Delete(':id')
-  // @ApiOkResponse()
-  // @ApiOperation({ summary: 'Eliminar un usuario' })
-  // deleteUser(@Param('id', ParseIntPipe) id: number) {
-  //   return this.userService.remove(id);
-  // }
+  @Patch('me/books/:bookId/favorite')
+  @Roles(Role.User, Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
+  @ApiOkResponse()
+  @ApiOperation({ summary: 'Añadir libro a favorito' })
+  async updateFavorite(
+    @Body() favoriteDto: UserBookFavorite,
+    @Request() req,
+    @Param('bookId', ParseIntPipe) bookId: number,
+  ) {
+    const userId = req.user.userId;
+    await this.userService.toggleFavorite(userId, bookId, favoriteDto.favorite);
+    return { message: 'Favorito actualizado' };
+  }
 }

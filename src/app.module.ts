@@ -4,6 +4,7 @@ import { DatabaseModule } from './database/database.module';
 import { BooksModule } from './modules/books/books.module';
 import { GenreModule } from './modules/genre/genre.module';
 import { UserModule } from './modules/user/user.module';
+import { UserBooksModule } from './modules/user-books/user-books.module';
 import AuthModule from './modules/auth/auth.module';
 
 @Module({
@@ -16,6 +17,7 @@ import AuthModule from './modules/auth/auth.module';
     GenreModule,
     UserModule,
     AuthModule,
+    UserBooksModule,
   ],
 })
 export class AppModule {
