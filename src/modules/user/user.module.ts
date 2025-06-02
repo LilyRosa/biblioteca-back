@@ -14,7 +14,7 @@ import { UserBooksModule } from '../user-books/user-books.module';
   imports: [
     TypeOrmModule.forFeature([User]),
     forwardRef(() => AuthModule),
-    BooksModule,
+    forwardRef(() => BooksModule),
     UserBooksModule,
   ],
   providers: [UserService, AdminSeederService],

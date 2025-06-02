@@ -7,11 +7,23 @@ import {
   Param,
   Body,
   ParseIntPipe,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { BookService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
+import { Role, Roles } from 'src/common/decorators/roles.decorator';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 @ApiTags('books')
 @Controller('books')
 export class BookController {
@@ -29,6 +41,21 @@ export class BookController {
   @ApiOperation({ summary: 'Obtener un libro dado su id' })
   getBook(@Param('id', ParseIntPipe) id: number) {
     return this.bookService.getById(id);
+  }
+
+  @Get(':user/except')
+  @ApiOkResponse()
+  @ApiOperation({
+    summary: 'Obtener todos los libros excepto los del usuario autenticado',
+  })
+  @Roles(Role.User, Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({ description: 'Invalid Credentials' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
+  getAllExceptUserBooks(@Request() req) {
+    const userId = req.user.userId as number;
+    return this.bookService.getAllExceptUserBooks(userId);
   }
 
   @Post()

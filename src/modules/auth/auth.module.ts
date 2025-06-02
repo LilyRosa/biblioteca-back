@@ -7,11 +7,15 @@ import { JwtStrategy } from '../../common/strategies/jwt.strategy';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { UserModule } from '../user/user.module';
+import { BooksModule } from '../books/books.module';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
     ConfigModule,
     forwardRef(() => UserModule),
+    forwardRef(() => BooksModule),
+    MailModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       global: true,

@@ -68,7 +68,9 @@ export class UserController {
   @ApiUnauthorizedResponse({ description: 'Invalid Credentials' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiOkResponse()
-  @ApiOperation({ summary: 'Obtener los datos del usuario autenticado' })
+  @ApiOperation({
+    summary: 'Obtener los libros favoritos del usuario autenticado',
+  })
   @ApiNotFoundResponse()
   getUserMeFavorite(@Request() req) {
     const userId = req.user.userId;
@@ -83,7 +85,9 @@ export class UserController {
   @ApiUnauthorizedResponse({ description: 'Invalid Credentials' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiOkResponse()
-  @ApiOperation({ summary: 'Obtener los datos del usuario autenticado' })
+  @ApiOperation({
+    summary: 'Obtener los libros sugeridos para el usuario autenticado',
+  })
   @ApiNotFoundResponse()
   getUserMeSuggestion(@Request() req) {
     const userId = req.user.userId;

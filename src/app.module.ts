@@ -6,6 +6,7 @@ import { GenreModule } from './modules/genre/genre.module';
 import { UserModule } from './modules/user/user.module';
 import { UserBooksModule } from './modules/user-books/user-books.module';
 import AuthModule from './modules/auth/auth.module';
+import { MailModule } from './modules/mail/mail.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import AuthModule from './modules/auth/auth.module';
     UserModule,
     AuthModule,
     UserBooksModule,
+    MailModule,
   ],
 })
 export class AppModule {

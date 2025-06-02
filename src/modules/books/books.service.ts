@@ -5,6 +5,7 @@ import { Book } from './books.entity';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { Genre } from '../genre/genre.entity';
+import { UserBook } from '../user-books/user-books.entity';
 
 @Injectable()
 export class BookService {
@@ -13,6 +14,8 @@ export class BookService {
     private readonly bookRepository: Repository<Book>,
     @InjectRepository(Genre)
     private readonly genreRepository: Repository<Genre>,
+    @InjectRepository(UserBook)
+    private readonly userBookRepository: Repository<UserBook>,
   ) {}
 
   async getAll(page = 1, limit = 10): Promise<Book[]> {
@@ -20,6 +23,27 @@ export class BookService {
       take: limit,
       skip: (page - 1) * limit,
     });
+  }
+
+  async getAllExceptUserBooks(userId: number): Promise<Book[]> {
+    // 1. Obtener los IDs de los libros del usuario
+    const userBookIds = await this.userBookRepository.find({
+      where: { user: { id_user: userId } },
+      relations: ['book'],
+    });
+
+    const bookIds = userBookIds.map((ub) => ub.book.id_book);
+
+    // 2. Buscar todos los libros que NO estén en esa lista
+    const query = this.bookRepository
+      .createQueryBuilder('book')
+      .leftJoinAndSelect('book.genre', 'genre');
+
+    if (bookIds.length > 0) {
+      query.where('book.id_book NOT IN (:...bookIds)', { bookIds });
+    }
+
+    return await query.getMany();
   }
 
   async getById(id: number): Promise<Book> {

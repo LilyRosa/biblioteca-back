@@ -12,6 +12,7 @@ import { Role } from '../../../common/decorators/roles.decorator';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/modules/user/user.entity';
 import { Repository } from 'typeorm';
+import MailService from 'src/modules/mail/services/mail.service';
 
 @Injectable()
 export default class AuthService {
@@ -21,6 +22,7 @@ export default class AuthService {
     private readonly jwtService: JwtService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly mailService: MailService,
   ) {}
 
   async login(username: string, password: string) {
@@ -83,6 +85,8 @@ export default class AuthService {
 
     await this.userRepository.save(newUser);
     this.logger.log(`Created new user with ID ${newUser.id_user}`);
+
+    await this.mailService.sendRegisterUser(dto.email, dto.username);
 
     return {
       id: newUser.id_user,

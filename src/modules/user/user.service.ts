@@ -50,25 +50,47 @@ export class UserService {
   async updateUserBooks(id: number, bookIds: number[]) {
     const user = await this.getById(id);
 
-    // Eliminar relaciones anteriores
-    await this.userBookRepository.delete({ user: { id_user: id } });
-
-    // Crear nuevas relaciones
-    const books = await this.bookRepository.find({
-      where: { id_book: In(bookIds) },
+    // Obtener relaciones actuales del usuario
+    const currentUserBooks = await this.userBookRepository.find({
+      where: { user: { id_user: id } },
+      relations: ['book'],
     });
 
-    const userBooks = books.map((book) => {
-      const userBook = new UserBook();
-      userBook.user = user;
-      userBook.book = book;
-      userBook.favorite = false; // o lo que quieras por defecto
-      return userBook;
-    });
+    // Obtener los IDs de libros actuales
+    const currentBookIds = currentUserBooks.map((ub) => ub.book.id_book);
 
-    await this.userBookRepository.save(userBooks);
+    // Calcular qué libros agregar y cuáles eliminar
+    const bookIdsToAdd = bookIds.filter((id) => !currentBookIds.includes(id));
+    const bookIdsToRemove = currentBookIds.filter(
+      (id) => !bookIds.includes(id),
+    );
 
-    // Recargar user con relaciones actualizadas
+    // Eliminar relaciones que ya no están
+    if (bookIdsToRemove.length > 0) {
+      await this.userBookRepository.delete({
+        user: { id_user: id },
+        book: { id_book: In(bookIdsToRemove) },
+      });
+    }
+
+    // Buscar libros nuevos para agregar
+    if (bookIdsToAdd.length > 0) {
+      const booksToAdd = await this.bookRepository.find({
+        where: { id_book: In(bookIdsToAdd) },
+      });
+
+      const newUserBooks = booksToAdd.map((book) => {
+        const userBook = new UserBook();
+        userBook.user = user;
+        userBook.book = book;
+        userBook.favorite = false; // valor por defecto
+        return userBook;
+      });
+
+      await this.userBookRepository.save(newUserBooks);
+    }
+
+    // Finalmente, recargar el usuario con relaciones actualizadas
     return this.getById(id);
   }
 
