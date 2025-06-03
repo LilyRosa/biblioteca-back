@@ -49,7 +49,7 @@ export class BookService {
   async getById(id: number): Promise<Book> {
     const book = await this.bookRepository.findOne({
       where: { id_book: id },
-      relations: ['genre', 'users'],
+      relations: ['genre'],
     });
 
     if (!book) {
@@ -59,7 +59,9 @@ export class BookService {
     return book;
   }
 
-  async create(createBookDto: CreateBookDto): Promise<Book> {
+  async create(
+    createBookDto: CreateBookDto & { poster: string; bookPdf: string },
+  ): Promise<Book> {
     const genre = await this.genreRepository.findOneBy({
       id_genre: createBookDto.genre,
     });
@@ -67,21 +69,36 @@ export class BookService {
     if (!genre) throw new NotFoundException('Género no encontrado');
 
     const newBook = this.bookRepository.create({
-      ...createBookDto,
+      theme: createBookDto.theme,
+      author: createBookDto.author,
+      resume: createBookDto.resume,
+      poster: createBookDto.poster,
+      bookPdf: createBookDto.bookPdf,
       genre,
     });
 
     return this.bookRepository.save(newBook);
   }
 
-  async update(id: number, updateBookDto: UpdateBookDto): Promise<Book> {
+  async update(
+    id: number,
+    updateBookDto: UpdateBookDto & { poster?: string; bookPdf?: string },
+  ): Promise<Book> {
     const book = await this.getById(id);
-    Object.assign(book, updateBookDto);
-    return this.bookRepository.save(book);
-  }
 
-  async remove(id: number): Promise<void> {
-    const book = await this.getById(id);
-    await this.bookRepository.remove(book);
+    if (updateBookDto.theme) book.theme = updateBookDto.theme;
+    if (updateBookDto.author) book.author = updateBookDto.author;
+    if (updateBookDto.resume) book.resume = updateBookDto.resume;
+    if (updateBookDto.genre) {
+      const genre = await this.genreRepository.findOneBy({
+        id_genre: updateBookDto.genre,
+      });
+      if (!genre) throw new NotFoundException('Género no encontrado');
+      book.genre = genre;
+    }
+    if (updateBookDto.poster) book.poster = updateBookDto.poster;
+    if (updateBookDto.bookPdf) book.bookPdf = updateBookDto.bookPdf;
+
+    return this.bookRepository.save(book);
   }
 }

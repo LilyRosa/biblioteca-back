@@ -6,11 +6,13 @@ import { Book } from './books.entity';
 import { Genre } from '../genre/genre.entity';
 import { UserBook } from '../user-books/user-books.entity';
 import AuthModule from '../auth/auth.module';
+import { BlobModule } from '../blob/blob.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Book, Genre, UserBook]),
     forwardRef(() => AuthModule),
+    BlobModule,
   ],
   providers: [BookService],
   controllers: [BookController],

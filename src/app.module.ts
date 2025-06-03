@@ -7,6 +7,7 @@ import { UserModule } from './modules/user/user.module';
 import { UserBooksModule } from './modules/user-books/user-books.module';
 import AuthModule from './modules/auth/auth.module';
 import { MailModule } from './modules/mail/mail.module';
+import { BlobModule } from './modules/blob/blob.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { MailModule } from './modules/mail/mail.module';
     AuthModule,
     UserBooksModule,
     MailModule,
+    BlobModule,
   ],
 })
 export class AppModule {
