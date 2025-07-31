@@ -101,4 +101,9 @@ export class BookService {
 
     return this.bookRepository.save(book);
   }
+
+  async remove(id: number): Promise<void> {
+    const book = await this.getById(id);
+    await this.bookRepository.remove(book);
+  }
 }

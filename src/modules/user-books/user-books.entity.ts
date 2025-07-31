@@ -23,7 +23,7 @@ export class UserBook {
   user: User;
 
   // Relación ManyToOne hacia Book
-  @ManyToOne(() => Book, (book) => book.userBooks)
+  @ManyToOne(() => Book, (book) => book.userBooks, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'book_id' })
   book: Book;
 }

@@ -8,7 +8,6 @@ export class UpdateUserDto {
     example: [1, 2, 3],
   })
   @IsArray()
-  @ArrayNotEmpty()
   @IsInt({ each: true })
   @Type(() => Number)
   books: number[];

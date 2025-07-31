@@ -91,7 +91,7 @@ export class UserService {
     }
 
     // Finalmente, recargar el usuario con relaciones actualizadas
-    return this.getById(id);
+    return this.getUserWithBooks(id);
   }
 
   async remove(id: number): Promise<void> {

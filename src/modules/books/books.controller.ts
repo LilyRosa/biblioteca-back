@@ -180,4 +180,11 @@ export class BookController {
 
     return this.bookService.update(id, updateData);
   }
+
+  @Delete(':id')
+  @ApiOkResponse()
+  @ApiOperation({ summary: 'Eliminar un libro' })
+  deleteBook(@Param('id', ParseIntPipe) id: number) {
+    return this.bookService.remove(id);
+  }
 }
